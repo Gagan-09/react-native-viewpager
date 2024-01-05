@@ -245,6 +245,10 @@ var ViewPager = createReactClass({
       );
     }
   },
+  
+  scrollToOffset(offset: number){
+    this.state.scrollValue.setValue(offset + this.childIndex)
+  },
 
   _getPage(pageIdx: number, loop:boolean) {
     var dataSource = this.props.dataSource;
