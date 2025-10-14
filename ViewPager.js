@@ -16,7 +16,7 @@ var {
 } = ReactNative;
 
 var StaticRenderer = require("react-native-web/dist/cjs/vendor/react-native/StaticRenderer/index.js");
-var TimerMixin = require("react-timer-mixin");
+var TimerMixin = require('react-timer-mixin');
 
 var DefaultViewPageIndicator = require("./DefaultViewPageIndicator");
 var deviceWidth = Dimensions.get("window").width;
@@ -65,7 +65,7 @@ var ViewPager = createReactClass({
     return {
       currentPage: 0,
       viewWidth: this.props.viewWidth,
-      scrollValue: new Animated.Value(0),
+      scrollValue: new Animated.Value(0)
     };
   },
 
@@ -74,8 +74,8 @@ var ViewPager = createReactClass({
 
     var release = (e, gestureState) => {
       var relativeGestureDistance = gestureState.dx / this.state.viewWidth,
-        //lastPageIndex = this.props.children.length - 1,
-        vx = gestureState.vx;
+          //lastPageIndex = this.props.children.length - 1,
+          vx = gestureState.vx;
 
       var step = 0;
       if (
@@ -261,9 +261,8 @@ var ViewPager = createReactClass({
       );
     }
   },
-
   scrollToOffset(offset: number) {
-    this.state.scrollValue.setValue(offset + this.childIndex);
+    this.state.scrollValue.setValue(offset + this.childIndex)
   },
 
   _getPage(pageIdx: number, loop: boolean) {
@@ -284,7 +283,7 @@ var ViewPager = createReactClass({
   },
 
   render() {
-    const isSSR = typeof window === "undefined";
+    const isSSR = typeof window === 'undefined'; 
     var dataSource = this.props.dataSource;
     var pageIDs = dataSource.pageIdentities;
 
@@ -294,7 +293,7 @@ var ViewPager = createReactClass({
     var hasLeft = false;
     var viewWidth = this.state.viewWidth;
 
-    if (pageIDs.length > 0) {
+    if(pageIDs.length > 0) {
       // left page
       if (this.state.currentPage > 0) {
         bodyComponents.push(this._getPage(this.state.currentPage - 1));
@@ -324,41 +323,35 @@ var ViewPager = createReactClass({
     }
 
     var sceneContainerStyle = {
-      width: isSSR ? `calc(100vw * ${pagesNum})` : viewWidth * pagesNum,
+      width: isSSR ? `calc(100vw * ${pagesNum})`: (viewWidth * pagesNum),
       flex: 1,
       flexDirection: "row",
     };
 
     this.childIndex = hasLeft ? 1 : 0;
     this.state.scrollValue.setValue(this.childIndex);
-    var translateX = isSSR
-      ? bodyComponents.length === 1
-        ? "0"
-        : "-100vw"
-      : this.state.scrollValue.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0, -viewWidth],
-        });
+    var translateX = isSSR ? ( bodyComponents.length === 1 ? '0' : '-100vw') : this.state.scrollValue.interpolate({
+      inputRange: [0, 1], outputRange: [0, -viewWidth]
+    });
 
     return (
       <View
         style={{ flex: 1 }}
         onLayout={(event) => {
-          // console.log('ViewPager.onLayout()');
-          var viewWidth = event.nativeEvent.layout.width;
-          if (this.state.viewWidth === viewWidth) {
-            return;
-          }
-          this.setState({
-            currentPage: this.state.currentPage,
-            viewWidth: viewWidth,
-          });
-        }}
-      >
-        <Animated.View
-          style={[sceneContainerStyle, { transform: [{ translateX }] }]}
-          {...this._panResponder.panHandlers}
+            // console.log('ViewPager.onLayout()');
+            var viewWidth = event.nativeEvent.layout.width;
+            if (this.state.viewWidth === viewWidth) {
+              return;
+            }
+            this.setState({
+              currentPage: this.state.currentPage,
+              viewWidth: viewWidth,
+            });
+          }}
         >
+
+        <Animated.View style={[sceneContainerStyle, {transform: [{translateX}]}]}
+          {...this._panResponder.panHandlers}>
           {bodyComponents}
         </Animated.View>
 
