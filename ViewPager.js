@@ -186,7 +186,7 @@ if (nextProps.dataSource && nextProps.dataSource !== this.props.dataSource) {
     var pageCount = this.props.dataSource.getPageCount();
     if (pageNumber < 0 || pageNumber >= pageCount) {
       console.error("Invalid page number: ", pageNumber);
-      return;
+      return
     }
 
     var step = pageNumber - this.state.currentPage;
