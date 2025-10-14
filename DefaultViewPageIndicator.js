@@ -89,7 +89,7 @@ var DefaultViewPageIndicator = createReactClass({
 
     var indicators = [];
     for (var i = 0; i < pageCount; i++) {
-      indicators.push(this.renderIndicator(i));
+      indicators.push(this.renderIndicator(i))
     }
 
     var curDotStyle = [styles.curDot, { left }];
