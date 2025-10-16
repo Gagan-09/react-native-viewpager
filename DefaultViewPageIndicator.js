@@ -114,7 +114,9 @@ var DefaultViewPageIndicator = createReactClass({
   render() {
     var pageCount = this.props.pageCount;
     var itemWidth = DOT_SIZE + (DOT_SAPCE * 2);
-    
+    var offset = (this.state.viewWidth - itemWidth * pageCount) / 2 + itemWidth * this.props.activePage;
+
+    //var left = offset;
     var offsetX = itemWidth * (this.props.activePage - this.props.scrollOffset);
     var left = this.props.scrollValue.interpolate({
       inputRange: [0, 1], outputRange: [offsetX, offsetX + itemWidth]
