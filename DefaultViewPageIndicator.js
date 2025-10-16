@@ -48,6 +48,10 @@ var styles = StyleSheet.create({
   },
 });
 
+// Pre-flatten
+var baseDotStyle = StyleSheet.flatten(styles.dot);
+var baseCurDotStyle = StyleSheet.flatten(styles.curDot);
+
 var DefaultViewPageIndicator = createReactClass({
   propTypes: {
     goToPage: PropTypes.func,
@@ -60,19 +64,18 @@ var DefaultViewPageIndicator = createReactClass({
   },
 
   getInitialState() {
-    var initialDotStyle = [styles.dot];
-    if (this.props.dotColor) {
-      initialDotStyle.push({ backgroundColor: this.props.dotColor });
-    }
+    var dotStyle = this.props.dotColor ? 
+      Object.assign({}, baseDotStyle, {backgroundColor: this.props.dotColor}) : 
+      baseDotStyle;
     
-    var initialCurDotStaticStyle = [styles.curDot];
-    if (this.props.activeDotColor) {
-      initialCurDotStaticStyle.push({ backgroundColor: this.props.activeDotColor });
-    }
+    var curDotStaticStyle = this.props.activeDotColor ? 
+      Object.assign({}, baseCurDotStyle, {backgroundColor: this.props.activeDotColor}) : 
+      baseCurDotStyle;
 
     return {
       viewWidth: 0,
-      dotStyles: [initialDotStyle, initialCurDotStaticStyle], 
+      dotStyle: dotStyle,
+      curDotStaticStyle: curDotStaticStyle,
     };
   },
 
@@ -81,29 +84,29 @@ var DefaultViewPageIndicator = createReactClass({
     const activeDotColorChanged = nextProps.activeDotColor !== this.props.activeDotColor;
 
     if (dotColorChanged || activeDotColorChanged) {
-      this.setState(prevState => {
-        let newDotStyles = [...prevState.dotStyles]; 
+      var newState = {};
+      
+      if (dotColorChanged) {
+        newState.dotStyle = nextProps.dotColor ? 
+          Object.assign({}, baseDotStyle, {backgroundColor: nextProps.dotColor}) : 
+          baseDotStyle;
+      }
 
-        if (dotColorChanged) {
-          let newInactiveStyle = [styles.dot, nextProps.dotColor ? { backgroundColor: nextProps.dotColor } : {}];
-          newDotStyles[0] = newInactiveStyle;
-        }
+      if (activeDotColorChanged) {
+        newState.curDotStaticStyle = nextProps.activeDotColor ? 
+          Object.assign({}, baseCurDotStyle, {backgroundColor: nextProps.activeDotColor}) : 
+          baseCurDotStyle;
+      }
 
-        if (activeDotColorChanged) {
-          let newActiveStaticStyle = [styles.curDot, nextProps.activeDotColor ? { backgroundColor: nextProps.activeDotColor } : {}];
-          newDotStyles[1] = newActiveStaticStyle;
-        }
-        return { dotStyles: newDotStyles };
-      });
+      this.setState(newState);
     }
   },
 
   renderIndicator(page) {
-    var dotStyle = this.state.dotStyles[0];
-
+    // Use the pre-computed style object directly
     return (
       <TouchableOpacity style={styles.tab} key={'idc_' + page} onPress={() => this.props.goToPage(page)}>
-        <View style={dotStyle} />
+        <View style={this.state.dotStyle} />
       </TouchableOpacity>
     );
   },
@@ -115,14 +118,14 @@ var DefaultViewPageIndicator = createReactClass({
     var offsetX = itemWidth * (this.props.activePage - this.props.scrollOffset);
     var left = this.props.scrollValue.interpolate({
       inputRange: [0, 1], outputRange: [offsetX, offsetX + itemWidth]
-    })
+    });
 
     var indicators = [];
     for (var i = 0; i < pageCount; i++) {
-      indicators.push(this.renderIndicator(i))
+      indicators.push(this.renderIndicator(i));
     }
-    var activeStaticStyle = this.state.dotStyles[1];
-    var curDotStyle = [...activeStaticStyle, { left }];
+
+    var curDotStyle = [this.state.curDotStaticStyle, {left: left}];
 
     return (
       <View style={styles.tabs}
